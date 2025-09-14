@@ -1,0 +1,39 @@
+[package]
+name = "ni"
+version = "0.2.0"
+edition = "2024"
+description = "Small limited alloc-free named identifier"
+documentation = "https://docs.rs/ni"
+readme = "README.md"
+license = "MIT"
+authors = ["nanoqsh"]
+keywords = ["small", "no-std"]
+categories = ["data-structures"]
+repository = "https://github.com/nanoqsh/ni"
+rust-version = "1.87"
+
+[features]
+default = ["std"]
+std = []
+bincode = ["dep:bincode"]
+serde = ["dep:serde"]
+
+[dependencies]
+bincode = { version = "2.0", optional = true }
+serde = { version = "1.0", optional = true }
+
+[lints.rust]
+elided-lifetimes-in-paths = "deny"
+
+[lints.clippy]
+manual-assert = "deny"
+match-wildcard-for-single-variants = "deny"
+missing-assert-message = "deny"
+missing-inline-in-public-items = "deny"
+semicolon-if-nothing-returned = "deny"
+trivially-copy-pass-by-ref = "deny"
+use-self = "deny"
+unwrap-used = "deny"
+
+[package.metadata.docs.rs]
+all-features = true
