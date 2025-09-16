@@ -52,7 +52,7 @@ mod tests {
         let data = bincode::encode_to_vec(name, conf).expect("encode name");
         let (name, read): (Name, _) = bincode::decode_from_slice(&data, conf).expect("decode name");
 
-        assert_eq!(name.decode(), "hello");
+        assert_eq!(name.decode().as_str(), "hello");
         assert_eq!(read, "hello".len() + 1);
     }
 
@@ -65,7 +65,7 @@ mod tests {
         let (name, read): (Name, _) =
             bincode::borrow_decode_from_slice(&data, conf).expect("decode name");
 
-        assert_eq!(name.decode(), "hello");
+        assert_eq!(name.decode().as_str(), "hello");
         assert_eq!(read, "hello".len() + 1);
     }
 

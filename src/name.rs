@@ -173,7 +173,7 @@ impl TryFrom<&str> for Name {
 
 /// Return type from the [`decode`](Name::decode) method
 /// used to obtain a slice or string.
-#[derive(Clone, Copy, Debug, Eq)]
+#[derive(Clone, Copy, Debug)]
 pub struct DecodedName {
     buf: [u8; Name::MAXLEN],
     idx: usize,
@@ -203,58 +203,6 @@ impl DecodedName {
         // * The invariant of the `Name` type is allowed to contain only
         //   letters, numbers and underscores, so all chars are valid utf8
         unsafe { str::from_utf8_unchecked(self.as_slice()) }
-    }
-}
-
-impl<S> PartialEq<S> for DecodedName
-where
-    S: AsRef<[u8]> + ?Sized,
-{
-    #[inline]
-    fn eq(&self, other: &S) -> bool {
-        self.as_slice() == other.as_ref()
-    }
-}
-
-impl PartialEq<DecodedName> for [u8] {
-    #[inline]
-    fn eq(&self, other: &DecodedName) -> bool {
-        self == other.as_slice()
-    }
-}
-
-impl PartialEq<DecodedName> for &[u8] {
-    #[inline]
-    fn eq(&self, other: &DecodedName) -> bool {
-        *self == other.as_slice()
-    }
-}
-
-impl<const N: usize> PartialEq<DecodedName> for [u8; N] {
-    #[inline]
-    fn eq(&self, other: &DecodedName) -> bool {
-        self == other.as_slice()
-    }
-}
-
-impl<const N: usize> PartialEq<DecodedName> for &[u8; N] {
-    #[inline]
-    fn eq(&self, other: &DecodedName) -> bool {
-        self.as_slice() == other.as_slice()
-    }
-}
-
-impl PartialEq<DecodedName> for str {
-    #[inline]
-    fn eq(&self, other: &DecodedName) -> bool {
-        self.as_bytes() == other.as_slice()
-    }
-}
-
-impl PartialEq<DecodedName> for &str {
-    #[inline]
-    fn eq(&self, other: &DecodedName) -> bool {
-        self.as_bytes() == other.as_slice()
     }
 }
 
@@ -327,7 +275,7 @@ impl From<Error> for std::io::Error {
 ///
 /// ```
 /// let hello = const { ni::name!("hello_world") };
-/// assert_eq!(hello.decode(), "hello_world");
+/// assert_eq!(hello.decode().as_str(), "hello_world");
 /// ```
 #[macro_export]
 macro_rules! name {
@@ -348,7 +296,7 @@ mod tests {
     fn code() -> Result<(), Error> {
         let s = b"hello";
         let name = Name::encode(s)?;
-        assert_eq!(name.decode(), s);
+        assert_eq!(name.decode().as_slice(), s);
         assert_eq!(name.len(), 5);
         Ok(())
     }
@@ -362,7 +310,7 @@ mod tests {
             (string, orig)
         };
 
-        assert_eq!(string, orig);
+        assert_eq!(string.as_str(), orig);
     }
 
     #[test]
@@ -388,7 +336,7 @@ mod tests {
 
         for test in tests {
             let name = name!(test);
-            assert_eq!(name.decode(), test);
+            assert_eq!(name.decode().as_str(), test);
             assert_eq!(name.len(), test.len());
         }
     }
@@ -397,7 +345,7 @@ mod tests {
     fn code_long() -> Result<(), Error> {
         let s = b"999999999999999999999999";
         let name = Name::encode(s)?;
-        assert_eq!(name.decode(), s);
+        assert_eq!(name.decode().as_slice(), s);
         assert_eq!(name.len(), 24);
         Ok(())
     }
@@ -405,7 +353,7 @@ mod tests {
     #[test]
     fn encode_char() -> Result<(), Error> {
         let name = Name::encode_char('a')?;
-        assert_eq!(name.decode(), "a");
+        assert_eq!(name.decode().as_str(), "a");
         assert_eq!(name.len(), 1);
         Ok(())
     }
