@@ -10,7 +10,16 @@ const _: () = {
         size_of::<Name>() == size_of::<Option<Name>>(),
         "`Name` and `Option<Name>` must have the same size",
     );
+
+    assert!(
+        align_of::<Name>() == align_of::<u64>(),
+        "`Name` and `u64` must have the same alignment",
+    );
 };
+
+#[repr(Rust, packed)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+struct InnerU128(NonZeroU128);
 
 /// Small limited alloc-free named identifier.
 ///
@@ -19,10 +28,6 @@ const _: () = {
 /// * `size_of::<Name>() == size_of::<Option<Name>>()`
 ///
 /// Names are also `Copy`.
-///
-/// Note that at the moment `align_of::<Name>() == 16` due to implementation
-/// details, since `Name` contains a [`NonZeroU128`] inside. This may be fixed
-/// in the future.
 ///
 /// # Invariants
 ///
@@ -34,7 +39,7 @@ const _: () = {
 ///   - Underscores `'_'`
 /// * Cannot start with an underscore.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Name(NonZeroU128);
+pub struct Name(InnerU128, [u64; 0]);
 
 impl Name {
     /// The maximum possible length of a name.
@@ -85,7 +90,7 @@ impl Name {
         //   - all chars are `_` but this is prohibited because the first character is not `_`.
         //   - the string is empty but this is also prohibited.
         let num = unsafe { NonZeroU128::new_unchecked(sum) };
-        Ok(Self(num))
+        Ok(Self(InnerU128(num), []))
     }
 
     /// Encodes the name from a char.
@@ -104,7 +109,7 @@ impl Name {
     /// Decodes the name into a buffer.
     #[inline]
     pub const fn decode(self) -> DecodedName {
-        let mut num = self.0.get();
+        let mut num = self.0.0.get();
         let mut buf = [0; Self::MAXLEN];
         let mut idx = buf.len() - 1;
         loop {
@@ -129,7 +134,7 @@ impl Name {
     /// Returns the name length.
     #[inline]
     pub const fn len(self) -> usize {
-        u128::ilog(self.0.get(), 37) as usize + 1
+        u128::ilog(self.0.0.get(), 37) as usize + 1
     }
 
     /// Names are always non-empty.
