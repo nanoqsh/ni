@@ -1,6 +1,6 @@
 [package]
 name = "ni"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 description = "Small limited alloc-free named identifier"
 documentation = "https://docs.rs/ni"
