@@ -18,7 +18,7 @@ const _: () = {
 };
 
 #[repr(Rust, packed)]
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 struct InnerU128(NonZeroU128);
 
 /// Small limited alloc-free named identifier.
@@ -38,7 +38,7 @@ struct InnerU128(NonZeroU128);
 ///   - Digits `'0'..='9'`
 ///   - Underscores `'_'`
 /// * Cannot start with an underscore.
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Name(InnerU128, [u64; 0]);
 
 impl Name {
