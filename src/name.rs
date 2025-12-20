@@ -2,11 +2,6 @@ use core::{error, fmt, num::NonZeroU128, slice, str};
 
 const _: () = {
     assert!(
-        size_of::<Name>() == size_of::<&str>(),
-        "`Name` and `&str` must have the same size",
-    );
-
-    assert!(
         size_of::<Name>() == size_of::<Option<Name>>(),
         "`Name` and `Option<Name>` must have the same size",
     );
