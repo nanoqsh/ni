@@ -7,10 +7,6 @@ extern crate std;
 
 mod name;
 
-#[cfg(feature = "bincode")]
-#[cfg_attr(docsrs, doc(cfg(feature = "bincode")))]
-mod bincode;
-
 #[cfg(feature = "serde")]
 #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 mod serde;

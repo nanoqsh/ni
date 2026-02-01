@@ -31,7 +31,7 @@ Add the crate to your project. You can enable a feature to get serialization/des
 cargo add ni -F serde
 ```
 
-Currently, the crate supports `serde` and `bincode`. This is optional if you only need to store many small strings in memory.
+Currently, the crate supports `serde`. This is optional if you only need to store many small strings in memory.
 
 Now we can efficiently parse data with many identifiers, for example a schema with arbitrary fields like a `HashMap`:
 
