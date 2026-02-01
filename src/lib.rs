@@ -7,6 +7,10 @@ extern crate std;
 
 mod name;
 
+#[cfg(feature = "bytemuck")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bytemuck")))]
+mod bytemuck;
+
 #[cfg(feature = "serde")]
 #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 mod serde;

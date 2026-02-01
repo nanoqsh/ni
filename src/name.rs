@@ -12,7 +12,7 @@ const _: () = {
     );
 };
 
-#[repr(Rust, packed)]
+#[repr(C, packed)]
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 struct InnerU128(NonZeroU128);
 
@@ -33,6 +33,7 @@ struct InnerU128(NonZeroU128);
 ///   - Digits `'0'..='9'`
 ///   - Underscores `'_'`
 /// * Cannot start with an underscore.
+#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Name(InnerU128, [u64; 0]);
 
