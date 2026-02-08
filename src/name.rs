@@ -238,7 +238,6 @@ pub enum Error {
 }
 
 impl Error {
-    #[doc(hidden)]
     #[inline]
     pub const fn as_str(&self) -> &'static str {
         match self {
@@ -267,26 +266,27 @@ impl From<Error> for std::io::Error {
     }
 }
 
-/// Creates a [name](Name) from the string.
-/// Panics when name is [invalid](Error).
+/// Creates a [name](Name) from the string literal at compiletime.
+///
+/// Compilation fails if name is [invalid](Error).
 ///
 /// # Examples
 ///
-/// This constructor can be called in a const context.
-///
 /// ```
-/// let hello = const { ni::name!("hello_world") };
-/// assert_eq!(hello.decode().as_str(), "hello_world");
+/// const HELLO: ni::Name = ni::name!("hello_world");
+/// assert_eq!(HELLO.decode().as_str(), "hello_world");
 /// ```
 #[macro_export]
 macro_rules! name {
-    ($s:expr) => {{
-        let s: &str = $s;
-        match $crate::Name::encode(s.as_bytes()) {
-            ::core::result::Result::Ok(name) => name,
-            ::core::result::Result::Err(e) => ::core::panic!("{}", e.as_str()),
+    ($s:literal) => {
+        const {
+            let s: &str = $s;
+            match $crate::Name::encode(s.as_bytes()) {
+                ::core::result::Result::Ok(name) => name,
+                ::core::result::Result::Err(e) => ::core::panic!("{}", e.as_str()),
+            }
         }
-    }};
+    };
 }
 
 #[cfg(test)]
@@ -304,14 +304,12 @@ mod tests {
 
     #[test]
     fn code_const() {
-        let (string, orig) = const {
-            let orig = "hellowo";
-            let name = name!(orig);
-            let string = name.decode();
-            (string, orig)
+        let string = const {
+            let name = name!("hellowo");
+            name.decode()
         };
 
-        assert_eq!(string.as_str(), orig);
+        assert_eq!(string.as_str(), "hellowo");
     }
 
     #[test]
@@ -336,7 +334,7 @@ mod tests {
         ];
 
         for test in tests {
-            let name = name!(test);
+            let name = Name::try_from(test).expect("make name");
             assert_eq!(name.decode().as_str(), test);
             assert_eq!(name.len(), test.len());
         }
